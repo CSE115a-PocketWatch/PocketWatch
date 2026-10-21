@@ -1,0 +1,12 @@
+# Repository-wide ownership
+* @bsuresh18
+
+# Backend architecture
+/apps/api/src/core/ @bsuresh18
+/apps/api/src/config/ @bsuresh18
+
+# Shared API contracts
+/packages/contracts/ @bsuresh18
+
+# CI/CD configuration
+/.github/workflows/ @bsuresh18

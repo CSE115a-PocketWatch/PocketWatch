@@ -252,3 +252,190 @@ As database and Google Calendar integrations are implemented, required environme
 
 Never commit API keys, OAuth client secrets, database passwords, or other credentials.
 
+## Continuous Integration (CI)
+
+PocketWatch uses GitHub Actions to automatically validate code changes.
+
+The CI workflow is defined in:
+
+`.github/workflows/ci.yml`
+
+### Pipeline Triggers
+
+The pipeline runs automatically when:
+
+- A pull request targets the `main` branch.
+- Changes are pushed to the `main` branch.
+
+### Current CI Checks
+
+The pipeline currently performs the following backend checks:
+
+1. **Dependency Installation:** Installs workspace dependencies using pnpm.
+2. **TypeScript Validation:** Checks the backend for TypeScript errors.
+3. **Build:** Compiles the NestJS backend.
+
+Frontend validation and automated tests will be added as development progresses.
+
+### Running CI Checks Locally
+
+Before opening a pull request, run:
+
+```bash
+pnpm --filter @pocket-watch/api typecheck
+pnpm --filter @pocket-watch/api build
+```
+
+Both commands should complete successfully.
+
+### Viewing Pipeline Results
+
+1. Navigate to the repository on GitHub.
+2. Select the **Actions** tab.
+3. Open the relevant workflow run.
+4. Inspect the individual jobs and their logs.
+
+A failed CI check should be investigated and resolved before merging changes.
+
+## Pull Request Workflow
+
+All engineers should use feature branches and pull requests when contributing to PocketWatch.
+
+### 1. Update Your Local Repository
+
+```bash
+git switch main
+git pull origin main
+```
+
+### 2. Create a Feature Branch
+
+```bash
+git switch -c feat/feature-name
+```
+
+Use the following branch naming conventions:
+
+| Prefix | Purpose |
+|---|---|
+| `feat/` | New features |
+| `fix/` | Bug fixes |
+| `chore/` | Maintenance and configuration |
+| `docs/` | Documentation changes |
+| `refactor/` | Code restructuring |
+| `test/` | Adding or updating tests |
+| `ci/` | CI/CD pipeline changes |
+
+### 3. Implement and Validate Changes
+
+Make changes within the relevant application or package.
+
+Before committing:
+
+```bash
+pnpm --filter @pocket-watch/api typecheck
+pnpm --filter @pocket-watch/api build
+```
+
+Run any additional tests relevant to your changes.
+
+### 4. Commit Changes
+
+Stage and inspect your changes:
+
+```bash
+git add .
+git diff --cached --stat
+```
+
+Commit with a descriptive message:
+
+```bash
+git commit -m "feat: implement assignment creation endpoint"
+```
+
+### 5. Push Your Branch
+
+```bash
+git push -u origin feat/feature-name
+```
+
+Replace `feat/feature-name` with your actual branch name.
+
+### 6. Open a Pull Request
+
+On GitHub:
+
+1. Navigate to the **Pull Requests** tab.
+2. Select **New pull request**.
+3. Set the base branch to `main`.
+4. Select your feature branch as the compare branch.
+5. Describe the changes, motivation, and testing performed.
+6. Request a review from another engineer.
+
+### 7. Code Review and Merge
+
+Before merging a pull request:
+
+- Ensure the CI pipeline passes.
+- Obtain at least one approving review from another engineer.
+- Resolve outstanding review comments.
+- Verify that changes follow the project's architecture.
+- Ensure relevant documentation and tests are updated.
+
+Use **Squash and merge** when available to keep the main branch history clean.
+
+Delete the feature branch after merging.
+
+## Engineering Standards
+
+### Code Organization
+
+- Keep frontend code in `apps/web/`.
+- Keep backend code in `apps/api/`.
+- Place shared API contracts and types in `packages/contracts/`.
+- Follow the existing modular architecture.
+- Avoid introducing unnecessary dependencies.
+- Keep changes focused and independently reviewable.
+
+### Testing
+
+- Run relevant TypeScript checks before opening a PR.
+- Add unit tests for new business logic when the test framework is available.
+- Do not merge known failing changes.
+- Include regression tests when fixing bugs, where practical.
+
+### Architecture Changes
+
+Changes involving the following should receive principal engineer review:
+
+- Database schemas and migrations
+- Authentication and authorization
+- Shared API contracts
+- Application architecture
+- External integrations
+- CI/CD configuration
+
+### Security
+
+- Never commit secrets, API keys, or credentials.
+- Store local configuration in ignored `.env` files.
+- Document required environment variables using `.env.example`.
+- Avoid logging sensitive user information.
+
+## Repository Governance
+
+The team follows a pull-request-based development workflow.
+
+The following requirements are currently **team conventions**, not automatically enforced GitHub restrictions:
+
+- Feature branches for development
+- At least one approving review
+- Passing CI checks before merging
+- Resolved review comments
+- Principal engineer review for architectural changes
+
+Mandatory branch protection and required status checks will be configured when repository administrator access is available.
+
+Until then, contributors are expected to follow these requirements manually.
+
