@@ -3,3 +3,18 @@
 @theme inline {
   --font-sans: var(--font-nata-sans), system-ui, sans-serif;
 }
+
+@theme {
+  /* Greys: never pure black or white */
+  --color-grey-50: #F7F7F5;   /* page background */
+  --color-grey-100: #FDFDFC;  /* card background */
+  --color-grey-200: #E4E4E1;  /* borders, divider lines */
+  --color-grey-500: #85857F;  /* secondary text */
+  --color-grey-900: #1D1C1B;  /* main text (Varia's neutral) */
+
+  /* Version 1: Modern */
+  --color-primary-1: #5C1771;      /* purple */
+  --color-primary-2: #1C8A36;      /* green: main buttons */
+  --color-primary-2-dark: #17722D; /* darker green for hover */
+  --color-accent: #C5368F;         /* pink */
+}

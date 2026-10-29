@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={nataSans.variable}>
-      <body className="min-h-screen bg-white text-slate-900 antialiased font-sans">
+      <body className="min-h-screen bg-grey-50 text-grey-900 antialiased font-sans">
         {children}
       </body>
     </html>
