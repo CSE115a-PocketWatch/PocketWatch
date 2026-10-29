@@ -17,7 +17,7 @@ jobs:
     name: Backend Checks
     runs-on: ubuntu-24.04
     env:
-	DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pocketwatch
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pocketwatch
 
     steps:
       - name: Checkout repository
