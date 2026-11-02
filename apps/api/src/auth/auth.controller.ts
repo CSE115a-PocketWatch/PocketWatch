@@ -1,6 +1,6 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Profile } from 'passport-google-oauth20';
+import { AuthUser } from './auth.service.js';
 
 @Controller('auth')
 export class AuthController {
@@ -11,7 +11,7 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  googleCallback(@Req() req: { user: Profile }) {
+  googleCallback(@Req() req: { user: AuthUser }) {
     return req.user;
   }
 }

@@ -1,0 +1,76 @@
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Profile } from 'passport-google-oauth20';
+import { PrismaService } from '../database/prisma.service.js';
+import { decryptToken, encryptToken } from './token-crypto.js';
+
+const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
+
+// Never includes googleRefreshToken, so it's safe to return from routes.
+const authUserSelect = { id: true, email: true, name: true, avatarUrl: true } as const;
+export type AuthUser = { id: string; email: string; name: string | null; avatarUrl: string | null };
+
+@Injectable()
+export class AuthService {
+  private readonly encryptionKey: Buffer;
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: ConfigService,
+  ) {
+    this.encryptionKey = Buffer.from(config.getOrThrow<string>('TOKEN_ENCRYPTION_KEY'), 'base64');
+    if (this.encryptionKey.length !== 32) {
+      throw new Error('TOKEN_ENCRYPTION_KEY must be 32 bytes, base64-encoded');
+    }
+  }
+
+  // Find by googleId, otherwise create. Profile fields are refreshed on every sign-in.
+  async upsertUser(profile: Profile, refreshToken: string | undefined): Promise<AuthUser> {
+    const email = profile.emails?.[0]?.value;
+    if (!email) {
+      throw new UnauthorizedException('Google account has no email');
+    }
+    const fields = {
+      email,
+      name: profile.displayName || null,
+      avatarUrl: profile.photos?.[0]?.value ?? null,
+      // Keep the stored token if Google didn't send a new one.
+      ...(refreshToken && { googleRefreshToken: encryptToken(refreshToken, this.encryptionKey) }),
+    };
+
+    return this.prisma.user.upsert({
+      where: { googleId: profile.id },
+      update: fields,
+      create: { googleId: profile.id, ...fields },
+      select: authUserSelect,
+    });
+  }
+
+  // Returns a fresh Google access token for calling Google APIs (e.g. Calendar) on the user's behalf.
+  async getAccessToken(userId: string): Promise<string> {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { googleRefreshToken: true },
+    });
+    if (!user.googleRefreshToken) {
+      throw new UnauthorizedException('User has not granted Google access');
+    }
+
+    const response = await fetch(GOOGLE_TOKEN_URL, {
+      method: 'POST',
+      body: new URLSearchParams({
+        client_id: this.config.getOrThrow<string>('GOOGLE_CLIENT_ID'),
+        client_secret: this.config.getOrThrow<string>('GOOGLE_CLIENT_SECRET'),
+        refresh_token: decryptToken(user.googleRefreshToken, this.encryptionKey),
+        grant_type: 'refresh_token',
+      }),
+    });
+    // Usually means the user revoked access, so they need to sign in again.
+    if (!response.ok) {
+      throw new UnauthorizedException('Google rejected the refresh token');
+    }
+
+    const { access_token } = (await response.json()) as { access_token: string };
+    return access_token;
+  }
+}
