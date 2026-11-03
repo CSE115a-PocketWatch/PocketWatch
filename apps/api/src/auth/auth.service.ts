@@ -4,12 +4,14 @@ import { Profile } from 'passport-google-oauth20';
 import { PrismaService } from '../database/prisma.service.js';
 import { decryptToken, encryptToken } from './token-crypto.js';
 
+// Google's endpoint for exchanging a refresh token for a new access token.
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 
 // Never includes googleRefreshToken, so it's safe to return from routes.
 const authUserSelect = { id: true, email: true, name: true, avatarUrl: true } as const;
 export type AuthUser = { id: string; email: string; name: string | null; avatarUrl: string | null };
 
+// Sign-in logic: saving users and getting Google tokens for them.
 @Injectable()
 export class AuthService {
   private readonly encryptionKey: Buffer;
@@ -18,7 +20,9 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
   ) {
+    // The key is stored in .env as base64 text; convert it back to raw bytes.
     this.encryptionKey = Buffer.from(config.getOrThrow<string>('TOKEN_ENCRYPTION_KEY'), 'base64');
+    // AES-256 needs exactly 32 bytes. Fail at startup instead of on every sign-in.
     if (this.encryptionKey.length !== 32) {
       throw new Error('TOKEN_ENCRYPTION_KEY must be 32 bytes, base64-encoded');
     }
@@ -26,10 +30,13 @@ export class AuthService {
 
   // Find by googleId, otherwise create. Profile fields are refreshed on every sign-in.
   async upsertUser(profile: Profile, refreshToken: string | undefined): Promise<AuthUser> {
+    // Email is required by the User table.
     const email = profile.emails?.[0]?.value;
     if (!email) {
       throw new UnauthorizedException('Google account has no email');
     }
+
+    // Columns to save from the Google profile.
     const fields = {
       email,
       name: profile.displayName || null,
@@ -38,6 +45,7 @@ export class AuthService {
       ...(refreshToken && { googleRefreshToken: encryptToken(refreshToken, this.encryptionKey) }),
     };
 
+    // Update the user if they exist, otherwise create them. googleId never changes, unlike email.
     return this.prisma.user.upsert({
       where: { googleId: profile.id },
       update: fields,
@@ -48,6 +56,7 @@ export class AuthService {
 
   // Returns a fresh Google access token for calling Google APIs (e.g. Calendar) on the user's behalf.
   async getAccessToken(userId: string): Promise<string> {
+    // Load only the encrypted refresh token.
     const user = await this.prisma.user.findUniqueOrThrow({
       where: { id: userId },
       select: { googleRefreshToken: true },
@@ -56,6 +65,7 @@ export class AuthService {
       throw new UnauthorizedException('User has not granted Google access');
     }
 
+    // Ask Google for a new access token using the user's refresh token.
     const response = await fetch(GOOGLE_TOKEN_URL, {
       method: 'POST',
       body: new URLSearchParams({
@@ -70,6 +80,7 @@ export class AuthService {
       throw new UnauthorizedException('Google rejected the refresh token');
     }
 
+    // Access tokens expire after about an hour, so callers should get a new one each time.
     const { access_token } = (await response.json()) as { access_token: string };
     return access_token;
   }
