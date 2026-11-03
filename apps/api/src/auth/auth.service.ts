@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Profile } from 'passport-google-oauth20';
@@ -6,6 +7,9 @@ import { decryptToken, encryptToken } from './token-crypto.js';
 
 // Google's endpoint for exchanging a refresh token for a new access token.
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
+
+// How long a sign-in lasts before the user has to sign in again.
+export const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 // Never includes googleRefreshToken, so it's safe to return from routes.
 const authUserSelect = { id: true, email: true, name: true, avatarUrl: true } as const;
@@ -52,6 +56,36 @@ export class AuthService {
       create: { googleId: profile.id, ...fields },
       select: authUserSelect,
     });
+  }
+
+  // Creates a session for the user and returns its ID (stored in the cookie).
+  async createSession(userId: string): Promise<string> {
+    // Random and unguessable, since anyone with this ID is signed in as the user.
+    const id = randomBytes(32).toString('base64url');
+    await this.prisma.session.create({
+      data: { id, userId, expiresAt: new Date(Date.now() + SESSION_TTL_MS) },
+    });
+    return id;
+  }
+
+  // Looks up who a session cookie belongs to. Returns null if it's missing or expired.
+  async getUserFromSession(sessionId: string): Promise<AuthUser | null> {
+    // Load the session together with its user (safe fields only, never the token).
+    const session = await this.prisma.session.findUnique({
+      where: { id: sessionId },
+      select: { expiresAt: true, user: { select: authUserSelect } },
+    });
+    if (!session) {
+      return null;
+    }
+
+    // Expired sessions don't count. Delete them as we find them to keep the table clean.
+    if (session.expiresAt < new Date()) {
+      await this.prisma.session.deleteMany({ where: { id: sessionId } });
+      return null;
+    }
+
+    return session.user;
   }
 
   // Returns a fresh Google access token for calling Google APIs (e.g. Calendar) on the user's behalf.
