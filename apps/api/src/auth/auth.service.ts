@@ -91,6 +91,11 @@ export class AuthService {
     return session.user;
   }
 
+  // Ends a session (logout). Does nothing if it's already gone.
+  async deleteSession(sessionId: string): Promise<void> {
+    await this.prisma.session.deleteMany({ where: { id: sessionId } });
+  }
+
   // Returns a fresh Google access token for calling Google APIs (e.g. Calendar) on the user's behalf.
   async getAccessToken(userId: string): Promise<string> {
     // Load only the encrypted refresh token.

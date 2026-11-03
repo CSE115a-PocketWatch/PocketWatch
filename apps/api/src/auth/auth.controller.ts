@@ -1,10 +1,18 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpCode, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
-import type { Response } from 'express';
+import type { CookieOptions, Request, Response } from 'express';
 import { AuthService, AuthUser, SESSION_COOKIE, SESSION_TTL_MS } from './auth.service.js';
 import { CurrentUser } from './current-user.decorator.js';
 import { SessionGuard } from './session.guard.js';
+
+// Shared by setting and clearing the cookie. The browser only clears it if these match.
+const sessionCookieOptions: CookieOptions = {
+  httpOnly: true, // JavaScript in the page can't read it
+  sameSite: 'lax', // other sites can't use it in POST requests
+  secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+  path: '/',
+};
 
 // All routes here start with /auth.
 @Controller('auth')
@@ -28,13 +36,8 @@ export class AuthController {
     const sessionId = await this.authService.createSession(req.user.id);
 
     // The browser sends this cookie back on every request, so the API knows who it is.
-    res.cookie(SESSION_COOKIE, sessionId, {
-      httpOnly: true, // JavaScript in the page can't read it
-      sameSite: 'lax', // other sites can't use it in POST requests
-      secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-      maxAge: SESSION_TTL_MS, // expires with the session
-      path: '/',
-    });
+    // It expires at the same time as the session.
+    res.cookie(SESSION_COOKIE, sessionId, { ...sessionCookieOptions, maxAge: SESSION_TTL_MS });
 
     // Send the user back to the app.
     res.redirect(this.config.getOrThrow<string>('FRONTEND_URL'));
@@ -46,5 +49,17 @@ export class AuthController {
   @UseGuards(SessionGuard)
   me(@CurrentUser() user: AuthUser): AuthUser {
     return user;
+  }
+
+  // POST /auth/logout: ends the session and removes the cookie.
+  // Not guarded, so logging out twice (or with an expired session) still succeeds.
+  @Post('logout')
+  @HttpCode(204)
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<void> {
+    const sessionId: unknown = req.cookies?.[SESSION_COOKIE];
+    if (typeof sessionId === 'string') {
+      await this.authService.deleteSession(sessionId);
+    }
+    res.clearCookie(SESSION_COOKIE, sessionCookieOptions);
   }
 }
