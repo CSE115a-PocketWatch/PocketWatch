@@ -11,6 +11,9 @@ const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 // How long a sign-in lasts before the user has to sign in again.
 export const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
+// Name of the cookie that holds the session ID.
+export const SESSION_COOKIE = 'session';
+
 // Never includes googleRefreshToken, so it's safe to return from routes.
 const authUserSelect = { id: true, email: true, name: true, avatarUrl: true } as const;
 export type AuthUser = { id: string; email: string; name: string | null; avatarUrl: string | null };

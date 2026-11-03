@@ -2,10 +2,9 @@ import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import type { Response } from 'express';
-import { AuthService, AuthUser, SESSION_TTL_MS } from './auth.service.js';
-
-// Name of the cookie that holds the session ID.
-export const SESSION_COOKIE = 'session';
+import { AuthService, AuthUser, SESSION_COOKIE, SESSION_TTL_MS } from './auth.service.js';
+import { CurrentUser } from './current-user.decorator.js';
+import { SessionGuard } from './session.guard.js';
 
 // All routes here start with /auth.
 @Controller('auth')
@@ -39,5 +38,13 @@ export class AuthController {
 
     // Send the user back to the app.
     res.redirect(this.config.getOrThrow<string>('FRONTEND_URL'));
+  }
+
+  // GET /auth/me: returns the signed-in user, or 401 if not signed in.
+  // The frontend calls this to check whether someone is logged in.
+  @Get('me')
+  @UseGuards(SessionGuard)
+  me(@CurrentUser() user: AuthUser): AuthUser {
+    return user;
   }
 }
