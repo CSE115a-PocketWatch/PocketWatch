@@ -591,3 +591,50 @@ PocketWatch aims to provide a simple, practical study-planning experience that h
 
 The initial MVP prioritizes core scheduling functionality, maintainable code, and a reliable development workflow over advanced features.
 
+
+## Docker Setup
+
+PocketWatch supports local development using Docker Compose.
+
+### Prerequisites
+
+- Docker Desktop installed and running
+- WSL2 integration enabled (Windows users)
+
+### Running PocketWatch
+
+From the repository root, run:
+
+```bash
+docker compose up --build
+```
+
+This builds and starts two containers:
+
+- **Frontend (Next.js):** http://localhost:3000
+- **Backend (NestJS):** http://localhost:3001
+
+Both services run in development mode with source code mounted into the containers.
+
+### Stopping PocketWatch
+
+Press `Ctrl + C` in the terminal running Docker Compose, or run:
+
+```bash
+docker compose down
+```
+
+### Viewing Container Status
+
+```bash
+docker compose ps
+```
+
+### Viewing Logs
+
+```bash
+docker compose logs -f
+```
+
+Docker manages the Node.js and pnpm dependencies inside the containers, so separate local installations are not required for this workflow.
+
