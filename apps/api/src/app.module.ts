@@ -1,7 +1,9 @@
+
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module.js';
 import { PrismaModule } from './database/prisma.module.js';
+import { GoogleCalendarModule } from './integrations/google-calendar/google-calendar.module.js';
 
 // Root module: everything the app uses is registered here.
 @Module({
@@ -12,6 +14,8 @@ import { PrismaModule } from './database/prisma.module.js';
     PrismaModule,
     // Google sign-in.
     AuthModule,
+
+    GoogleCalendarModule,
   ],
   controllers: [],
   providers: [],
