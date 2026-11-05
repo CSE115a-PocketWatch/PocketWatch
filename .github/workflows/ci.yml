@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  backend:
+  
     name: Backend Checks
     runs-on: ubuntu-24.04
     env:
@@ -60,6 +60,8 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pocketwatch
 
       - name: Typecheck frontend
         run: pnpm --filter @pocket-watch/web typecheck
