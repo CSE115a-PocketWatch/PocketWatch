@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  backend:
+  backend: 
     name: Backend Checks
     runs-on: ubuntu-24.04
     env:
@@ -40,4 +40,35 @@ jobs:
 
       - name: Build backend
         run: pnpm --filter @pocket-watch/api build
+
+  frontend:
+    name: Frontend Checks
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pocketwatch
+
+      - name: Typecheck frontend
+        run: pnpm --filter @pocket-watch/web typecheck
+
+      - name: Run frontend tests
+        run: pnpm --filter @pocket-watch/web test
+
+      - name: Build frontend
+        run: pnpm --filter @pocket-watch/web build
 
