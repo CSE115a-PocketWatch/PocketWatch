@@ -9,8 +9,9 @@
     "start": "node dist/main.js",
     "typecheck": "tsc --noEmit",
     "postinstall": "prisma generate",
-    "test": "vitest run",
+    "test": "vitest run && pnpm build && node --test tests/*.test.mjs",
     "test:watch": "vitest"
+
   },
   "dependencies": {
     "@nestjs/common": "^12.2.0",

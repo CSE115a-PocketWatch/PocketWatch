@@ -62,4 +62,19 @@ export class AuthController {
     }
     res.clearCookie(SESSION_COOKIE, sessionCookieOptions);
   }
+
+  // POST /auth/logout-all: signs the current user out on every device.
+  @Post('logout-all')
+  @HttpCode(204) // Success, with no response body.
+  @UseGuards(SessionGuard) // Reject requests without a valid session.
+  async logoutAll(
+    // Get the user from their session
+    @CurrentUser() user: AuthUser,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<void> {
+    await this.authService.deleteAllSessions(user.id);
+    // Remove this browser's cookie. Other devices' cookies no longer
+    // work because their sessions have been deleted.
+    res.clearCookie(SESSION_COOKIE, sessionCookieOptions);
+  }
 }
