@@ -38,6 +38,9 @@ jobs:
       - name: Typecheck backend
         run: pnpm --filter @pocket-watch/api typecheck
 
+      - name: Run backend tests
+        run: pnpm --filter @pocket-watch/api test
+
       - name: Build backend
         run: pnpm --filter @pocket-watch/api build
 
