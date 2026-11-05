@@ -1,0 +1,35 @@
+
+services:
+  web:
+    build:
+      context: .
+    command: pnpm --filter @pocket-watch/web dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/web/node_modules
+      - /app/apps/api/node_modules
+      - /app/packages/contracts/node_modules
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: .
+    command: pnpm --filter @pocket-watch/api dev
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/web/node_modules
+      - /app/apps/api/node_modules
+      - /app/packages/contracts/node_modules
+
