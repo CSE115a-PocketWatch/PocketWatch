@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  
+  backend: 
     name: Backend Checks
     runs-on: ubuntu-24.04
     env:
