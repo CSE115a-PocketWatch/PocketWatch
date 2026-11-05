@@ -96,6 +96,14 @@ export class AuthService {
     await this.prisma.session.deleteMany({ where: { id: sessionId } });
   }
 
+  // Ends every PocketWatch session belonging to this user.
+  async deleteAllSessions(userId: string): Promise<void> {
+    await this.prisma.session.deleteMany({
+      // Only delete this user's sessions; keep everyone else signed in.
+      where: { userId },
+    });
+  }
+
   // Returns a fresh Google access token for calling Google APIs (e.g. Calendar) on the user's behalf.
   async getAccessToken(userId: string): Promise<string> {
     // Load only the encrypted refresh token.
