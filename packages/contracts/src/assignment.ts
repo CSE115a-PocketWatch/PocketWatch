@@ -1,5 +1,3 @@
-export type AssignmentPriority = 'low' | 'medium' | 'high';
-
 export type Assignment = {
   id: string;
   title: string;
@@ -9,6 +7,4 @@ export type Assignment = {
 
   // Total estimated work required.
   estimatedMinutes: number;
-
-  priority: AssignmentPriority;
 };

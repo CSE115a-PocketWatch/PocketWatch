@@ -1,1 +1,1 @@
-export type { Assignment, AssignmentPriority } from './assignment.js';
+export type { Assignment } from './assignment.js';
