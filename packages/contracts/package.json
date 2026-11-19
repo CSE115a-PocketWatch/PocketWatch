@@ -2,6 +2,13 @@
   "name": "@pocket-watch/contracts",
   "version": "0.1.0",
   "private": true,
+  "dependencies": {
+    "zod": "4"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3",
+    "vitest": "5.1.0"
+  },
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -9,12 +16,5 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
-  },
-  "dependencies": {
-    "zod": "^4.0.0"
-  },
-  "devDependencies": {
-    "typescript": "^7.0.2",
-    "vitest": "^5.1.0"
   }
 }

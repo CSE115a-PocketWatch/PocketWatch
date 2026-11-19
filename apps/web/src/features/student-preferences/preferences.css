@@ -1,0 +1,142 @@
+
+.preferences-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 48px 20px;
+  background: #ffffff;
+}
+
+.preferences-form {
+  width: min(100%, 620px);
+  padding: 28px 32px;
+  background: #eaeaea;
+  border: 22px solid #d9d9d9;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.preferences-form h1 {
+  font-size: 24px;
+  font-weight: 400;
+  margin: 0 0 24px;
+}
+
+.preference-row {
+  display: grid;
+  grid-template-columns: 1fr 160px auto;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  font-size: 15px;
+}
+
+.preference-row input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 6px;
+  border: 0;
+  background: #d9d9d9;
+  font: inherit;
+}
+
+.preference-row span {
+  font-size: 13px;
+}
+
+.availability-section h2 {
+  font-size: 15px;
+  font-weight: 400;
+  margin: 8px 0;
+}
+
+.weekday-selector {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.weekday-button {
+  padding: 7px 12px;
+  border: 0;
+  background: #dddddd;
+  color: #222;
+  cursor: pointer;
+}
+
+.weekday-button.selected {
+  background: #cdb9b9;
+}
+
+.weekday-button:focus-visible,
+.preferences-form input:focus-visible,
+.form-actions button:focus-visible {
+  outline: 2px solid #555;
+  outline-offset: 2px;
+}
+
+.time-range {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.time-range input {
+  min-width: 0;
+  width: 155px;
+  padding: 6px;
+  border: 0;
+  background: #ffffff;
+  text-align: center;
+  font: inherit;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.form-actions button {
+  min-width: 108px;
+  padding: 8px 18px;
+  border: 0;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.form-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-error {
+  color: #a11b1b;
+  font-size: 14px;
+}
+
+@media (max-width: 540px) {
+  .preferences-form {
+    padding: 20px;
+    border-width: 12px;
+  }
+
+  .preference-row {
+    grid-template-columns: 1fr;
+  }
+
+  .time-range {
+    gap: 8px;
+  }
+
+  .time-range input {
+    width: 45%;
+  }
+}
+
