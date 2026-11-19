@@ -21,8 +21,8 @@ describe('local-time', () => {
     expect(addDays({ year: 2026, month: 1, day: 1 }, -1)).toEqual({ year: 2025, month: 12, day: 31 });
   });
 
-  it('free-slots-1 weekdayOf numbers days from Sunday = 0', () => {
-    expect(weekdayOf({ year: 2026, month: 11, day: 15 })).toBe(0); // Sunday
+  it('free-slots-1 weekdayOf numbers days from Monday = 1 to Sunday = 7', () => {
+    expect(weekdayOf({ year: 2026, month: 11, day: 15 })).toBe(7); // Sunday
     expect(weekdayOf({ year: 2026, month: 11, day: 16 })).toBe(1); // Monday
     expect(weekdayOf({ year: 2026, month: 11, day: 21 })).toBe(6); // Saturday
   });

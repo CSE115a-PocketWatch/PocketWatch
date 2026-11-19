@@ -51,9 +51,9 @@ export function addDays(date: LocalDate, days: number): LocalDate {
   return { year: next.getUTCFullYear(), month: next.getUTCMonth() + 1, day: next.getUTCDate() };
 }
 
-// 0 = Sunday ... 6 = Saturday.
+// 1 = Monday ... 7 = Sunday, matching saved study preferences.
 export function weekdayOf(date: LocalDate): number {
-  return new Date(Date.UTC(date.year, date.month - 1, date.day)).getUTCDay();
+  return new Date(Date.UTC(date.year, date.month - 1, date.day)).getUTCDay() || 7;
 }
 
 // The exact moment of a local date and 'HH:MM' time in the time zone.

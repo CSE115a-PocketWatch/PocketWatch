@@ -5,7 +5,7 @@ import { findFreeSlots } from './free-slots.js';
 const pacific = 'America/Los_Angeles';
 
 // Mondays 4pm to 9pm Pacific, 60 minute sessions.
-const mondayEvenings: Availability = { days: [1], start: '16:00', end: '21:00', sessionMinutes: 60 };
+const mondayEvenings: Availability = { availableDays: [1], startTime: '16:00', endTime: '21:00', sessionLengthMinutes: 60 };
 
 // Monday 16 Nov 2026, midnight to midnight Pacific (PST is UTC-8).
 const monday = { from: new Date('2026-11-16T08:00:00Z'), to: new Date('2026-11-17T08:00:00Z') };
@@ -18,7 +18,7 @@ describe('findFreeSlots', () => {
   });
 
   it('free-slots-1 only returns slots on the chosen weekdays', () => {
-    const monWed: Availability = { ...mondayEvenings, days: [1, 3] };
+    const monWed: Availability = { ...mondayEvenings, availableDays: [1, 3] };
     // Sunday 15 Nov to Sunday 22 Nov Pacific.
     const week = { from: new Date('2026-11-15T08:00:00Z'), to: new Date('2026-11-22T08:00:00Z') };
 
@@ -29,7 +29,7 @@ describe('findFreeSlots', () => {
   });
 
   it('free-slots-1 converts local times correctly across a daylight saving change', () => {
-    const mornings: Availability = { days: [0, 6], start: '09:00', end: '10:00', sessionMinutes: 60 };
+    const mornings: Availability = { availableDays: [6, 7], startTime: '09:00', endTime: '10:00', sessionLengthMinutes: 60 };
     // Saturday 31 Oct (PDT, UTC-7) and Sunday 1 Nov 2026 (PST, UTC-8, clocks went back at 2am).
     const from = new Date('2026-10-31T07:00:00Z');
     const to = new Date('2026-11-02T08:00:00Z');
@@ -104,7 +104,7 @@ describe('findFreeSlots', () => {
   });
 
   it('free-slots-1 returns no slots when the end time is not after the start time', () => {
-    const backwards: Availability = { ...mondayEvenings, start: '21:00', end: '16:00' };
+    const backwards: Availability = { ...mondayEvenings, startTime: '21:00', endTime: '16:00' };
 
     expect(findFreeSlots(backwards, [], monday.from, monday.to, pacific)).toEqual([]);
   });
@@ -114,7 +114,12 @@ describe('findFreeSlots', () => {
     const from = new Date('2026-11-21T00:00:00Z');
     const to = new Date('2026-11-22T00:00:00Z');
 
-    expect(DEFAULT_AVAILABILITY).toEqual({ days: [0, 1, 2, 3, 4, 5, 6], start: '09:00', end: '21:00', sessionMinutes: 60 });
+    expect(DEFAULT_AVAILABILITY).toEqual({
+      availableDays: [1, 2, 3, 4, 5, 6, 7],
+      startTime: '09:00',
+      endTime: '21:00',
+      sessionLengthMinutes: 60,
+    });
     expect(findFreeSlots(DEFAULT_AVAILABILITY, [], from, to, 'UTC')).toEqual([
       { start: '2026-11-21T09:00:00.000Z', end: '2026-11-21T21:00:00.000Z' },
     ]);

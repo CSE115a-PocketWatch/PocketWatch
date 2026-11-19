@@ -38,23 +38,23 @@ export function findFreeSlots(
   timeZone: string,
 ): TimeSlot[] {
   // Overnight availability out of scope, so there are no slots.
-  if (availability.end <= availability.start) {
+  if (availability.endTime <= availability.startTime) {
     return [];
   }
 
   const busyBlocks = busy
     .map((slot) => ({ start: Date.parse(slot.start), end: Date.parse(slot.end) }))
     .sort((a, b) => a.start - b.start);
-  const minLength = availability.sessionMinutes * 60 * 1000;
+  const minLength = availability.sessionLengthMinutes * 60 * 1000;
   const slots: Block[] = [];
 
   // Every local day that touches the range, starting a day early in case of time zone edges.
   const lastDay = localDateOf(to, timeZone);
   for (let day = addDays(localDateOf(from, timeZone), -1); ; day = addDays(day, 1)) {
-    if (availability.days.includes(weekdayOf(day))) {
+    if (availability.availableDays.includes(weekdayOf(day))) {
       // The day's window, trimmed to the requested range.
-      const start = Math.max(localToUtc(day, availability.start, timeZone).getTime(), from.getTime());
-      const end = Math.min(localToUtc(day, availability.end, timeZone).getTime(), to.getTime());
+      const start = Math.max(localToUtc(day, availability.startTime, timeZone).getTime(), from.getTime());
+      const end = Math.min(localToUtc(day, availability.endTime, timeZone).getTime(), to.getTime());
       if (end > start) {
         slots.push(...subtract({ start, end }, busyBlocks));
       }
