@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { PrismaModule } from './database/prisma.module.js';
 import { GoogleCalendarModule } from './integrations/google-calendar/google-calendar.module.js';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SchedulingModule } from './scheduling/scheduling.module.js';
 
 // Root module: everything the app uses is registered here.
 @Module({
@@ -17,6 +18,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     AuthModule,
 
     GoogleCalendarModule,
+    // Free study time slots.
+    SchedulingModule,
   ],
   controllers: [],
   providers: [],
