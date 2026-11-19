@@ -6,9 +6,14 @@ import { formatDueDate } from '../week';
 interface UpcomingTasksProps {
   assignments: UpcomingAssignment[];
   onAddClick: () => void;
+  onDeleteClick?: (assignment: UpcomingAssignment) => void;
 }
 
-export default function UpcomingTasks({ assignments, onAddClick }: UpcomingTasksProps) {
+export default function UpcomingTasks({
+  assignments,
+  onAddClick,
+  onDeleteClick,
+}: UpcomingTasksProps) {
   const headingId = useId();
 
   const sortedAssignments = [...assignments].sort(
@@ -40,6 +45,16 @@ export default function UpcomingTasks({ assignments, onAddClick }: UpcomingTasks
               <span className="upcoming-task-due">
                 Due {formatDueDate(assignment.deadline)}
               </span>
+              {onDeleteClick && (
+                <button
+                  type="button"
+                  className="upcoming-task-delete"
+                  aria-label={`Delete ${assignment.title}`}
+                  onClick={() => onDeleteClick(assignment)}
+                >
+                  Delete
+                </button>
+              )}
             </li>
           ))}
         </ul>
