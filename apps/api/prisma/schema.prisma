@@ -17,6 +17,7 @@ model User {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   sessions           Session[]
+  preferences StudentPreferences?
 }
 
 model Session {
@@ -27,4 +28,19 @@ model Session {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+model StudentPreferences {
+  id                     String   @id @default(cuid())
+  userId                 String   @unique
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  dailyStudyLimitMinutes Int      @default(240)
+  sessionLengthMinutes   Int      @default(60)
+  availableDays          Int[]    @default([1, 2, 3, 4, 5])
+  startTime              String   @default("09:00")
+  endTime                String   @default("21:00")
+
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 }
