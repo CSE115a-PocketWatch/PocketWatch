@@ -75,4 +75,49 @@ describe('validatePreferences', () => {
       BadRequestException,
     );
   });
+
+  // S3-T26: Additional validation regression tests
+
+  it('rejects fractional study durations', () => {
+    expect(() =>
+      validatePreferences({
+        ...validPreferences,
+        dailyStudyLimitMinutes: 120.5,
+      }),
+    ).toThrow(BadRequestException);
+
+    expect(() =>
+      validatePreferences({
+        ...validPreferences,
+        sessionLengthMinutes: 30.5,
+      }),
+    ).toThrow(BadRequestException);
+  });
+
+  it('rejects an empty available days array', () => {
+    expect(() =>
+      validatePreferences({
+        ...validPreferences,
+        availableDays: [],
+      }),
+    ).toThrow(BadRequestException);
+  });
+
+  it('rejects missing required fields', () => {
+    const { startTime, ...incompletePreferences } = validPreferences;
+
+    expect(() =>
+      validatePreferences(incompletePreferences),
+    ).toThrow(BadRequestException);
+  });
+
+  it('rejects identical start and end times', () => {
+    expect(() =>
+      validatePreferences({
+        ...validPreferences,
+        startTime: '12:00',
+        endTime: '12:00',
+      }),
+    ).toThrow(BadRequestException);
+  });
 });
