@@ -366,3 +366,48 @@
   background: var(--surface);
   color: var(--accent);
 }
+
+/* delete-confirm-1: delete button and confirmation dialog */
+.upcoming-task-delete {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.8rem;
+  color: #b42318;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.upcoming-task-delete:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.delete-assignment-error {
+  margin: 0.5rem 0;
+  color: #b42318;
+}
+
+.delete-assignment-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.delete-assignment-confirm {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #b42318;
+  color: #fff;
+  cursor: pointer;
+}
+
+.delete-assignment-confirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
