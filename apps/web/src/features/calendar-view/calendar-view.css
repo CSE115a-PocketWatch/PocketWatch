@@ -1,0 +1,413 @@
+.dashboard {
+  --sidebar-width: 240px;
+  --surface: #ffffff;
+  --sidebar-bg: #e4f7f1;
+  --control-bg: #d9d9d9;
+  --grid-bg: #fafafa;
+  --grid-line: #d4d4d4;
+  --grid-hour-line: #ececec;
+  --text: #1a1a1a;
+  --text-muted: #6b6b6b;
+  --accent: #561c6b;
+  --accent-contrast: #ffffff;
+  --error: #a11b1b;
+
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    'header header'
+    'sidebar calendar';
+  height: 100vh;
+  height: 100dvh;
+  background: var(--surface);
+  color: var(--text);
+  /* --font-nata-sans is set by app/dashboard/layout.tsx. */
+  font-family: var(--font-nata-sans, Arial, Helvetica, sans-serif);
+  font-weight: 600;
+}
+
+.dashboard :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Header */
+
+.dashboard-header {
+  grid-area: header;
+  display: grid;
+  grid-template-columns: calc(var(--sidebar-width) - 24px) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px 16px;
+}
+
+.dashboard-greeting {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-week-range {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 16px;
+  box-sizing: border-box;
+  background: var(--control-bg);
+  font-size: 17px;
+}
+
+.dashboard-edit-view {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 0;
+  background: var(--control-bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+/* Sidebar */
+
+.upcoming-tasks {
+  grid-area: sidebar;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 20px 16px;
+  overflow-y: auto;
+  border-top-right-radius: 12px;
+  background: var(--sidebar-bg);
+}
+
+.upcoming-tasks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.upcoming-tasks-header h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.upcoming-tasks-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--control-bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.upcoming-tasks-empty {
+  margin: 16px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.upcoming-tasks-list {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.upcoming-tasks-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--surface);
+  overflow-wrap: anywhere;
+}
+
+.upcoming-task-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.upcoming-task-due {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.user-profile-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  flex-shrink: 0;
+  width: 58px;
+  height: 58px;
+  margin-top: auto;
+  border-radius: 50%;
+  background: var(--control-bg);
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* Calendar */
+
+.dashboard-calendar {
+  grid-area: calendar;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0 24px 24px 16px;
+}
+
+.week-grid {
+  --time-column-width: 56px;
+
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.week-grid-header,
+.week-grid-body {
+  display: grid;
+  grid-template-columns: var(--time-column-width) minmax(0, 1fr);
+}
+
+.week-grid-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--surface);
+}
+
+.week-grid-days,
+.week-grid-columns {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.week-grid-days {
+  margin: 0;
+  padding: 8px 0;
+  list-style: none;
+  font-size: 12px;
+  text-align: center;
+}
+
+.week-grid-hours {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.week-grid-hours li {
+  height: var(--hour-height);
+  box-sizing: border-box;
+  padding: 2px 8px 0 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.week-grid-columns {
+  border: 1px solid var(--grid-line);
+  background: var(--grid-bg);
+}
+
+.week-grid-column {
+  height: calc(var(--hour-height) * 24);
+  border-left: 1px solid var(--grid-line);
+  background-image: linear-gradient(to bottom, var(--grid-hour-line) 1px, transparent 1px);
+  background-position: 0 -1px;
+  background-size: 100% var(--hour-height);
+}
+
+.week-grid-column:first-child {
+  border-left: 0;
+}
+
+/* Add-assignment dialog */
+
+.assignment-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(20, 20, 20, 0.35);
+}
+
+.assignment-dialog {
+  width: min(100%, 420px);
+  box-sizing: border-box;
+  padding: 20px 24px;
+  border: 1px solid var(--grid-line);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+}
+
+.assignment-name-input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+  padding: 4px 0;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 18px;
+}
+
+.assignment-name-input::placeholder {
+  color: #9a9a9a;
+}
+
+.assignment-name-input:focus-visible {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+
+.assignment-form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.assignment-form-label-caps {
+  text-transform: uppercase;
+}
+
+.assignment-form-fields {
+  display: flex;
+  gap: 8px;
+}
+
+.assignment-form-fields input,
+.assignment-estimate-field {
+  box-sizing: border-box;
+  min-height: 34px;
+  padding: 4px 8px;
+  border: 1px solid #bdbdbd;
+  border-radius: 2px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.assignment-estimate-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.assignment-estimate-field input {
+  width: 56px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  text-align: right;
+}
+
+.assignment-form-error {
+  margin: 4px 0 0;
+  color: var(--error);
+  font-size: 13px;
+}
+
+.assignment-form-actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.button-primary,
+.button-secondary {
+  min-height: 34px;
+  padding: 6px 12px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.button-primary {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.button-secondary {
+  background: var(--surface);
+  color: var(--accent);
+}
+
+/* delete-confirm-1: delete button and confirmation dialog */
+.upcoming-task-delete {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.8rem;
+  color: #b42318;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.upcoming-task-delete:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.delete-assignment-error {
+  margin: 0.5rem 0;
+  color: #b42318;
+}
+
+.delete-assignment-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.delete-assignment-confirm {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #b42318;
+  color: #fff;
+  cursor: pointer;
+}
+
+.delete-assignment-confirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

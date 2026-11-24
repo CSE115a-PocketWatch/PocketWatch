@@ -8,15 +8,17 @@ datasource db {
 }
 
 model User {
-  id                 String    @id @default(cuid())
-  googleId           String    @unique
-  email              String    @unique
+  id                 String              @id @default(cuid())
+  googleId           String              @unique
+  email              String              @unique
   name               String?
   avatarUrl          String?
-  googleRefreshToken String?   // stored ENCRYPTED by the auth code; never plain text
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  googleRefreshToken String?             // stored ENCRYPTED by the auth code; never plain text
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
   sessions           Session[]
+  assignments        Assignment[]
+  preferences        StudentPreferences?
 }
 
 model Session {
@@ -27,4 +29,47 @@ model Session {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+enum AssignmentPriority {
+  low
+  medium
+  high
+}
+
+enum AssignmentStatus {
+  todo
+  in_progress
+  done
+}
+
+model Assignment {
+  id               String             @id @default(cuid())
+  userId           String
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title            String             @db.VarChar(200)
+  description      String?
+  deadline         DateTime
+  estimatedMinutes Int
+  priority         AssignmentPriority @default(medium)
+  status           AssignmentStatus   @default(todo)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@index([userId, deadline])
+}
+
+model StudentPreferences {
+  id                     String   @id @default(cuid())
+  userId                 String   @unique
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  dailyStudyLimitMinutes Int      @default(240)
+  sessionLengthMinutes   Int      @default(60)
+  availableDays          Int[]    @default([1, 2, 3, 4, 5])
+  startTime              String   @default("09:00")
+  endTime                String   @default("21:00")
+
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 }
