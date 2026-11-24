@@ -1,13 +1,13 @@
 import { BadRequestException } from '@nestjs/common';
 
 // Longest range one request can ask for, so a single call can't read years of events.
-const MAX_RANGE_MS = 62 * 24 * 60 * 60 * 1000;
+export const MAX_RANGE_MS = 62 * 24 * 60 * 60 * 1000;
 
 // date-time that ends in Z or an offset like -08:00, so it's an exact moment.
 const ISO_WITH_TIME_ZONE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/;
 
-// Parses a from/to query value, or rejects the request with 400.
-function parseDateTime(name: string, value: unknown): Date {
+// Parses a date-time value (like from/to or a deadline), or rejects the request with 400.
+export function parseDateTime(name: string, value: unknown): Date {
   if (typeof value !== 'string' || !ISO_WITH_TIME_ZONE.test(value)) {
     throw new BadRequestException(`${name} must be an ISO date-time with a time zone`);
   }
