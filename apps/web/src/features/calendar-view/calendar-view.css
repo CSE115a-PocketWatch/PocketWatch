@@ -411,3 +411,23 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* upcoming-tasks-study-time-1: study time and overdue status */
+.upcoming-task-study-time {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.upcoming-task-overdue-label {
+  align-self: flex-start;
+  padding: 0 0.4rem;
+  border-radius: 4px;
+  background: #fde8e7;
+  color: #b42318;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.upcoming-task-overdue .upcoming-task-due {
+  color: #b42318;
+}
