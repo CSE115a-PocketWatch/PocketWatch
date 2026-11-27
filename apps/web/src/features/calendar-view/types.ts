@@ -8,6 +8,8 @@ export interface NewAssignment {
 
 export interface UpcomingAssignment extends NewAssignment {
   id: number;
+  // Minutes already studied. Comes from study sessions later; 0 for now.
+  completedMinutes?: number;
 }
 
 export const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
